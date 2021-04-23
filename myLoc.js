@@ -26,6 +26,8 @@ function displayLocation (position){
     let km = computeDistance(position.coords, ourCoords);
     let distance = document.getElementById("distance");
     distance.innerHTML = "На данный момент вы на " + km + " км от Тусяныча";
+
+    showMap(position.coords);
 }
 
 function displayError(error) {
@@ -61,5 +63,48 @@ function computeDistance(startCoords, destCoords) {
 function degreesToRadians (degrees) {
     let radians = (degrees * Math.PI) / 180;
     return radians;
+}
+
+let map;
+
+function showMap (coords) {
+    let googleLatAndLong = new google.maps.LatLng(coords.latitude, coords.longitude);
+
+    // GoogleMaps params
+
+let mapOptions = {
+    zoom: 10,     // Значение может быть от 0 до 21
+    center: googleLatAndLong,
+    mapTypeId: google.maps.MapTypeId.ROADMAP   // or SATELLITE or HYBRID
+};
+
+let mapDiv = document.getElementById("map");
+map = new google.maps.Map(mapDiv, mapOptions);
+
+let title = "Ваше местоположение";
+let content = "Вы здесь: " + coords.latitude + ", " + coords.longitude;
+addMarker(map, googleLatAndLong, title, content); 
+}
+
+// Добавление маркера местоположения на карту
+
+function addMarker(map, latlong, title, content) {
+    let markerOptions = {
+        position: latlong,
+        map: map,
+        title: title,
+        clickable: true
+    };
+
+    let marker = new google.maps.Marker(markerOptions);
+
+    let infoWindowOptions = {
+        content: content,
+        position: latlong
+    };
+    let infoWindow = new google.maps.InfoWindow( infoWindowOptions );
+    google.maps.event.addListener( marker, "click", function() {
+        infoWindow.open(map);
+    });
 }
 
