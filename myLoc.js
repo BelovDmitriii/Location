@@ -1,5 +1,5 @@
 window.onload = getMyLocation;
-
+let watchId = null;
 let ourCoords = {
     latitude: 59.877068, 
     longitude: 30.345234
@@ -7,9 +7,25 @@ let ourCoords = {
 
 function getMyLocation () {
     if (navigator.geolocation){
-        navigator.geolocation.getCurrentPosition(displayLocation);
+        //navigator.geolocation.getCurrentPosition(displayLocation);
+        let watchButton = document.getElementById('watch');
+        watchButton.onclick = watchLocation;
+        let clearButton = document.getElementById('clearWatch');
+        clearButton.onclick = clearWatch;
     } else {
         alert ("Не получить геоданные");
+    }
+}
+
+function watchLocation() {
+    watchId = navigator.geolocation.watchPosition(displayLocation, displayError);
+}
+
+function clearWatch() {
+    if(watchId) {
+        navigator.geolocation.clearWatch(watchId);
+    watchId = null;
+    alert ("Слежение за вами приостановлено");
     }
 }
 
@@ -19,15 +35,19 @@ function displayLocation (position){
 
     let div = document.getElementById("location");
     div.innerHTML = "Ваше местоположение: широта: " + latitude + ", долгота: " + longitude;
+    div.innerHTML += ( " с " + position.coords.accuracy + " метров точности");
 
 
     // Координаты точки А и В
 
     let km = computeDistance(position.coords, ourCoords);
+    
     let distance = document.getElementById("distance");
     distance.innerHTML = "На данный момент вы на " + km + " км от Тусяныча";
 
-    showMap(position.coords);
+    if (map == null){
+        showMap(position.coords);
+    }
 }
 
 function displayError(error) {
@@ -75,7 +95,7 @@ function showMap (coords) {
 let mapOptions = {
     zoom: 10,     // Значение может быть от 0 до 21
     center: googleLatAndLong,
-    mapTypeId: google.maps.MapTypeId.ROADMAP   // or SATELLITE or HYBRID
+    mapTypeId: google.maps.MapTypeId.navigator   // or SATELLITE or HYBRID
 };
 
 let mapDiv = document.getElementById("map");

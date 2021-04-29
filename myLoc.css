@@ -3,3 +3,11 @@
     height: 400px;
     border: 1px solid black;
 }
+
+#watch, #clearWatch  {
+    background-color: orange;
+    border-radius: 15px;
+    border: 1px solid gray;
+    height: 50px;
+    font-size: 19px;
+}
